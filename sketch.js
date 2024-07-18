@@ -2,6 +2,11 @@ let imagenPelota;
 let imagenRaqueta;
 let imagenComputadora;
 let imagenFondo;
+let sonidoRaqueta;
+let sonidoGol;
+
+let puntosJugador = 0;
+let puntosComputadora = 0;
 
 
 class Pelota {
@@ -22,6 +27,13 @@ class Pelota {
         this.rotation += this.vx + this.vy;
 
         if (this.x > width - this.diameter / 2 || this.x < this.diameter / 2) {
+            sonidoGol.play();
+            if (this.x < width / 2) {
+                puntosComputadora++;
+            } else {
+                puntosJugador++;
+            }
+            narrarPuntos();    
             this.reset();
         }
 
@@ -31,6 +43,7 @@ class Pelota {
 
         //si colisiona con la raqueta del jugador o la computadora, invierte el sentido y aumenta la velocidad en 10%
         if (colision(this.x, this.y, this.diameter, raqueta.x, raqueta.y, raqueta.width, raqueta.height) || colision(this.x, this.y, this.diameter, computadora.x, computadora.y, computadora.width, computadora.height)) {
+            sonidoRaqueta.play();
             this.vx *= -1;
             this.vx *= 1.1;
             this.vy *= 1.1;
@@ -129,6 +142,8 @@ function preload() {
     imagenRaqueta = loadImage('raqueta1.png');
     imagenComputadora = loadImage('raqueta2.png');
     imagenFondo = loadImage('fondo2.png');
+    sonidoRaqueta = loadSound('446100__justinvoke__bounce.wav');
+    sonidoGol = loadSound('274178__littlerobotsoundfactory__jingle_win_synth_02.wav');
 }
 
 
@@ -138,6 +153,16 @@ function setup() {
     raqueta = new Raqueta(20, 150, 20, 100, 5);
     computadora = new Raqueta(760, 150, 20, 100, 5);
 }
+
+function narrarPuntos() {
+    //Narra los puntos utilizando la api speechapi
+    //Narra utilizando español de México
+    let puntos = "El marcador está Jugador" + puntosJugador + " a Computadora" + puntosComputadora;
+    let mensaje = new SpeechSynthesisUtterance(puntos);
+    mensaje.lang = 'es-MX'; 
+    speechSynthesis.speak(mensaje);
+}
+
 
 function draw() {
     //background(0);
