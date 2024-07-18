@@ -1,3 +1,9 @@
+let imagenPelota;
+let imagenRaqueta;
+let imagenComputadora;
+let imagenFondo;
+
+
 class Pelota {
     constructor(x, y, diameter, vx, vy) {
         this.x = x;
@@ -12,6 +18,8 @@ class Pelota {
     update() {
         this.x += this.vx;
         this.y += this.vy;
+        //aumente la roatación de la pelota con la velocidad en el eje x y la velocidad en el eje y
+        this.rotation += this.vx + this.vy;
 
         if (this.x > width - this.diameter / 2 || this.x < this.diameter / 2) {
             this.reset();
@@ -35,10 +43,19 @@ class Pelota {
         this.y = 200;
         this.vx = 5 * (Math.random() < 0.5 ? -1 : 1);
         this.vy = 5 * (Math.random() < 0.5 ? -1 : 1);
+        //rotación actual de la pelota
+        this.rotation = 0;
     }
 
     draw() {
-        circle(this.x, this.y, this.diameter);
+        //dibuja la pelota como una imagen en lugar de un círculo
+        //rotaciona la pelota antes de dibujarla
+        push();
+        translate(this.x, this.y);
+        rotate(this.rotation);
+        image(imagenPelota, -this.diameter / 2, -this.diameter / 2, this.diameter, this.diameter);
+        pop();
+        //circle(this.x, this.y, this.diameter);
     }
 }
 
@@ -69,7 +86,14 @@ class Raqueta {
     }
 
     draw() {
-        rect(this.x, this.y, this.width, this.height);
+        //si raqueta jugador dibuja la raqueta con la imagen de la raqueta del jugador
+        if (this.x < width / 2) {
+            image(imagenRaqueta, this.x, this.y, this.width, this.height);
+        } else {
+            //si raqueta computadora dibuja la raqueta con la imagen de la raqueta de la computadora
+            image(imagenComputadora, this.x, this.y, this.width, this.height);
+        }       
+        //rect(this.x, this.y, this.width, this.height);
     }
 }
 
@@ -100,6 +124,12 @@ function colision(cx, cy, diameter, rx, ry, rw, rh) {
     return true;
 }
 
+function preload() {
+    imagenPelota = loadImage('pelota.png');
+    imagenRaqueta = loadImage('raqueta1.png');
+    imagenComputadora = loadImage('raqueta2.png');
+    imagenFondo = loadImage('fondo2.png');
+}
 
 
 function setup() {
@@ -110,7 +140,9 @@ function setup() {
 }
 
 function draw() {
-    background(0);
+    //background(0);
+    //dibujar el fondo
+    image(imagenFondo, 0, 0, width, height);
     pelota.update();
     pelota.draw();
     raqueta.update();
